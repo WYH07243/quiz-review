@@ -530,8 +530,8 @@ function renderQuestion(){
     h += '<div style="margin-top:6px;font-size:13px">你的答案：<b>'+escHtml(ans||'(未作答)')+'</b></div>';
     h += '<div style="margin-top:4px;font-size:13px;color:#27ae60">正确答案：<b>'+escHtml(q.correct)+'</b></div>';
     h += '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">';
-    h += '<button class="ai-btn" onclick="aiEvaluate('+q.number+\')'\''+'" id="aiBtn_'+q.number+'">🤖 AI 智能批改</button>';
-    h += '<button class="ai-btn" onclick="aiExplain('+q.number+\')'\''+'" id="aiExplainBtn_'+q.number+'">🤖 AI 生成解析</button>';
+    h += '<button class="ai-btn" onclick="aiEvaluate('+q.number+')" id="aiBtn_'+q.number+'">🤖 AI 智能批改</button>';
+    h += '<button class="ai-btn" onclick="aiExplain('+q.number+')" id="aiExplainBtn_'+q.number+'">🤖 AI 生成解析</button>';
     h += '</div>';
     h += '<div id="aiResult_'+q.number+'" class="ai-result hidden"></div>';
     if (q.explanation) h += '<div class="expl">💡 '+escHtml(q.explanation)+'</div>';
