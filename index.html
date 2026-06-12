@@ -716,7 +716,7 @@ async function aiEvaluate(num){
   var q=allQuestions.find(function(x){return x.number===num;});if(!q)return;
   var btn=document.getElementById('aiBtn_'+num);if(!btn)return;
   btn.disabled=true;btn.innerHTML='<span class="ai-loading"></span> scoring...';
-  var prompt='var prompt='你是一名通信原理考试阅卷老师。请判断学生的答案是否等价于正确答案（考虑计算题可能有多种写法）。
+  var prompt='你是一名通信原理考试阅卷老师。请判断学生的答案是否等价于正确答案（考虑计算题可能有多种写法）。
 
 题目：'+q.title+'
 正确答案：'+q.correct+'
@@ -738,7 +738,7 @@ async function aiExplain(num){
   var q=allQuestions.find(function(x){return x.number===num;});if(!q)return;
   var btn=document.getElementById('aiExplainBtn_'+num);if(!btn)return;
   btn.disabled=true;btn.innerHTML='<span class="ai-loading"></span> generating...';
-  var prompt='var prompt='你是一名通信原理老师。请详细讲解这道题的解题思路和步骤。
+  var prompt='你是一名通信原理老师。请详细讲解这道题的解题思路和步骤。
 
 题目：'+q.title+'
 答案：'+q.correct+'
