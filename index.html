@@ -760,7 +760,7 @@ async function aiSummary(){
   if(!wl.length){alert('no wrong questions');return;}
   var btn=document.getElementById('aiSummaryBtn');if(!btn)return;
   btn.disabled=true;btn.innerHTML='<span class="ai-loading"></span> analyzing...';
-  var prompt='You are a learning analysis assistant. Analyze the students wrong answers and suggest weak points and review focus.\n\n';
+  var prompt='你是一名学习分析助手。分析学生的错题，找出薄弱环节并给出复习建议。\n\n';
   wl.slice(0,10).forEach(function(q,i){
     prompt+=(i+1)+'. '+q.title+'\nStudent: '+(userAnswers[q.number]||'')+'\nCorrect: '+q.correct+'\n\n';
   });
