@@ -256,24 +256,21 @@ async function convertFile(file){
 }
 
 async function docxText(file){
-  if (typeof JSZip === 'undefined'){
+  // 使用 mammoth.js（更好的 docx 解析，支持表格、段落等）
+  if (typeof mammoth === 'undefined'){
     await new Promise(function(res,rej){
       var s = document.createElement('script');
-      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js';
       s.onload = res; s.onerror = rej;
       document.head.appendChild(s);
     });
   }
-  var zip = await JSZip.loadAsync(file);
-  var xmlFile = zip.file('word/document.xml');
-  if (!xmlFile) throw new Error('不是有效 docx');
-  var xml = await xmlFile.async('text');
-  var re = /<w:t[^>]*>([^<]*)<\/w:t>/g, parts = [], m;
-  while ((m = re.exec(xml)) !== null){ if (m[1]) parts.push(m[1]); }
-  return parts.join('');
+  var result = await mammoth.extractRawText({arrayBuffer: await file.arrayBuffer()});
+  return result.value;
 }
 
 async function docText(file){
+  // .doc 旧格式解析（Word二进制格式，纯前端提取有限）
   var buf = await file.arrayBuffer();
   var b = new Uint8Array(buf);
   var out = [], seg = '';
@@ -292,6 +289,7 @@ async function docText(file){
     }
   }
   if (seg.length > 10) out.push(seg);
+  if (out.length === 0) throw new Error('无法解析 .doc 文件，建议用 Word 另存为 .docx 格式后再导入');
   return out.join('\n');
 }
 
