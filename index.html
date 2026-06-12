@@ -144,7 +144,7 @@ body{font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",sans-serif;bac
     <h3 style="margin-bottom:12px">⚙️ AI 设置</h3>
     <label style="display:block;font-size:13px;color:#666;margin-bottom:4px">DeepSeek API Key</label>
     <input id="apiKeyInput" type="password" style="width:100%;padding:10px 14px;border:2px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px" placeholder="sk-..." value="">
-    <div style="font-size:12px;color:#999;margin-bottom:12px">用你的 DeepSeek API Key</div>
+    <div style="font-size:12px;color:#999;margin-bottom:12px">用你的 DeepSeek API Key（入门版免费领取额度，一次设置后自动保存）</div>
     <button onclick="saveApiKey()" style="padding:10px 24px;background:#4a90d9;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px">保存</button>
     <span id="apiKeyMsg" style="margin-left:12px;font-size:13px;color:#27ae60"></span>
   </div>
@@ -716,7 +716,13 @@ async function aiEvaluate(num){
   var q=allQuestions.find(function(x){return x.number===num;});if(!q)return;
   var btn=document.getElementById('aiBtn_'+num);if(!btn)return;
   btn.disabled=true;btn.innerHTML='<span class="ai-loading"></span> scoring...';
-  var prompt='You are a communication theory exam grader. Judge if the student answer is equivalent to the correct answer (considering calculation variations).\n\nQuestion: '+q.title+'\nCorrect: '+q.correct+'\nStudent: '+(userAnswers[num]||'')+'\n\nReply in Chinese: Is it correct? Give suggestions if partially correct.';
+  var prompt='var prompt='你是一名通信原理考试阅卷老师。请判断学生的答案是否等价于正确答案（考虑计算题可能有多种写法）。
+
+题目：'+q.title+'
+正确答案：'+q.correct+'
+学生答案：'+(userAnswers[num]||'')+'
+
+请用中文回答：是否正确？如果不完全正确，给出扣分点和修改建议。';
   try{
     var r=await callAI(prompt);
     var el=document.getElementById('aiResult_'+num);
@@ -732,7 +738,12 @@ async function aiExplain(num){
   var q=allQuestions.find(function(x){return x.number===num;});if(!q)return;
   var btn=document.getElementById('aiExplainBtn_'+num);if(!btn)return;
   btn.disabled=true;btn.innerHTML='<span class="ai-loading"></span> generating...';
-  var prompt='You are a communication theory teacher. Give a detailed explanation of this question.\n\nQuestion: '+q.title+'\nAnswer: '+q.correct+'\n\nReply in Chinese, simple and structured.';
+  var prompt='var prompt='你是一名通信原理老师。请详细讲解这道题的解题思路和步骤。
+
+题目：'+q.title+'
+答案：'+q.correct+'
+
+要求：用中文回答，简洁明了，分步骤讲解。';
   try{
     var r=await callAI(prompt);
     var el=document.getElementById('aiResult_'+num);
@@ -753,7 +764,7 @@ async function aiSummary(){
   wl.slice(0,10).forEach(function(q,i){
     prompt+=(i+1)+'. '+q.title+'\nStudent: '+(userAnswers[q.number]||'')+'\nCorrect: '+q.correct+'\n\n';
   });
-  prompt+='Reply in Chinese: main weak points? which topics to review?';
+  prompt+='请用中文回答：主要薄弱点是什么？建议重点复习哪些知识点？';
   try{
     var r=await callAI(prompt);
     var area=document.getElementById('aiSummaryArea');
