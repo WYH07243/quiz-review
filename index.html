@@ -132,7 +132,7 @@ body{font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",sans-serif;bac
 <body>
 
 <div class="topbar">
-  <h1>📝 通信原理复习题</h1>
+  <h1>复习题</h1>
   <div class="score">进度 <b id="progress">0/0</b></div>
 </div>
 
@@ -330,8 +330,8 @@ function removeFile(i){
     document.getElementById('btnStart').disabled = true;
     clearStatus();
     document.querySelector('#homePage h2').textContent = '导入复习题，开始复习题';
-    document.title = '📝 通信原理复习题';
-    document.querySelector('.topbar h1').textContent = '📝 通信原理复习题';
+    document.title = '复习题';
+    document.querySelector('.topbar h1').textContent = '复习题';
   } else {
     setStatus('已加载 ' + allQuestions.length + ' 题，来自 ' + fileNames.length + ' 个文件');
   }
