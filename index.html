@@ -7,45 +7,49 @@
 body{font-family:"Microsoft YaHei",sans-serif;background:#f0f2f5;padding:16px}
 .app{max-width:700px;margin:0 auto}
 .header{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:16px 20px;border-radius:12px;text-align:center;margin-bottom:16px}
-.header h1{font-size:18px;font-weight:600}.header p{font-size:12px;opacity:0.7;margin-top:4px}
+.header h1{font-size:18px;font-weight:600}.header p{font-size:12px;opacity:.7;margin-top:4px}
 .card{background:#fff;border-radius:12px;padding:20px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .qtext{font-size:16px;color:#333;line-height:1.7;margin-bottom:16px;padding:8px 0}
 .opt{padding:12px 16px;border-radius:8px;border:1.5px solid #e0e0e0;cursor:pointer;font-size:14px;color:#333;transition:.15s;background:#fff;margin-bottom:8px}
 .opt:hover{border-color:#4a90d9;background:#f5f8ff}
 .opt.correct{border-color:#27ae60;background:#eafff0;color:#27ae60;font-weight:600}
 .opt.wrong{border-color:#e74c3c;background:#fff0f0;color:#e74c3c}
-.opt.disabled{pointer-events:none;opacity:0.9}
+.opt.disabled{pointer-events:none;opacity:.9}
 .btn-bar{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
 .btn{padding:12px 28px;border-radius:10px;border:none;font-size:14px;cursor:pointer;font-weight:600}
 .btn-primary{background:#4a90d9;color:#fff}.btn-primary:hover{background:#3a7bc8}
 .btn-secondary{background:#e8ecf0;color:#555}.btn-secondary:hover{background:#dce0e6}
-.btn-success{background:#27ae60;color:#fff}.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-success{background:#27ae60;color:#fff}.btn-danger{background:#e74c3c;color:#fff;font-size:12px;padding:4px 10px;border-radius:6px;border:none;cursor:pointer;margin-left:4px;vertical-align:middle;line-height:1}
+.btn:disabled{opacity:.4;cursor:not-allowed}
 .hidden{display:none!important}
-.file-list{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.file-btn{padding:8px 16px;border-radius:8px;border:1px solid #4a90d9;background:#f5f8ff;color:#4a90d9;cursor:pointer;font-size:13px}
+.file-list{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.file-btn{padding:8px 14px;border-radius:8px;border:1px solid #4a90d9;background:#f5f8ff;color:#4a90d9;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;gap:4px}
 .file-btn:hover,.file-btn.active{background:#4a90d9;color:#fff}
+.file-btn .del-btn{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;border:none;background:rgba(255,255,255,0.3);color:inherit;font-size:12px;cursor:pointer;line-height:1;padding:0;margin-left:4px;font-weight:700}
+.file-btn .del-btn:hover{background:rgba(231,76,60,0.8);color:#fff}
 .progress{font-size:12px;color:#888;margin:8px 0 4px}
 .progress-bar{height:4px;background:#e8ecf0;border-radius:2px;margin-bottom:12px;overflow:hidden}
 .progress-bar div{height:100%;background:#4a90d9;border-radius:2px;transition:.3s;width:0%}
 .score{text-align:center;padding:20px;font-size:20px;color:#333}
 .score big{font-size:48px;display:block;margin-bottom:8px}
 .score num{color:#4a90d9;font-weight:700;font-size:28px}
-.import-zone{border:2px dashed #ccc;border-radius:10px;padding:16px;text-align:center;cursor:pointer;color:#888;font-size:13px;margin-top:12px;padding-top:12px;border-top:1px solid #eee}
+.import-zone{border:2px dashed #ccc;border-radius:10px;padding:16px;text-align:center;cursor:pointer;color:#888;font-size:13px;margin-top:12px;padding-top:12px;border-top:1px solid #eee;transition:.2s}
 .import-zone:hover{border-color:#4a90d9;background:#f5f8ff}
+.empty{text-align:center;padding:30px;color:#999;font-size:13px}
 </style></head><body>
 <div class="app">
-<div class="header"><h1>复习文件</h1><p>点击题库开始刷题，或拖入自定义 .txt 文件</p></div>
+<div class="header"><h1>复习文件</h1><p>点击题库开始刷题  |  可拖入 .txt 自定义题库</p></div>
 
 <div id="home">
 <div class="card">
-<div style="color:#888;font-size:13px;margin-bottom:12px">选择题库：</div>
-<div class="file-list" id="fileList"></div>
+<div style="color:#888;font-size:13px;margin-bottom:12px">题库列表：</div>
+<div class="file-list" id="fileList"><div class="empty">加载中...</div></div>
 <div class="import-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-+ 点击或拖拽添加自定义 .txt 题库
++ 点击或拖拽添加 .txt 题库文件
 </div>
 <input type="file" id="fileInput" accept=".txt" style="display:none" onchange="importFiles(this.files)">
 </div>
-<button class="btn btn-primary" id="btnStart" disabled onclick="startQuiz()" style="width:100%">开始答题</button>
+<button class="btn btn-primary" id="btnStart" disabled onclick="startQuiz()" style="width:100%">选择题库后开始答题</button>
 </div>
 
 <div id="quiz" class="hidden">
@@ -59,64 +63,77 @@ body{font-family:"Microsoft YaHei",sans-serif;background:#f0f2f5;padding:16px}
 <button class="btn btn-success hidden" id="btnFinish" onclick="showResult()">完成</button>
 <button class="btn btn-secondary" onclick="backHome()" style="margin-left:auto">返回首页</button>
 </div>
-</div>
-</div>
+</div></div>
 
 <script>
 var DATA={};var qs=[];var idx=0;var ans={};var curFile='';
-DATA['通信原理_大题.txt']=[
-{t:"PCM时分复用：8路信号每路4kHz，8位编码，求总码率？",o:["256kbit/s","512kbit/s","1024kbit/s","64kbit/s"],a:1},
-{t:"升余弦滚降RB=2400Baud，a=0.4，求带宽？",o:["1200Hz","1680Hz","2400Hz","3360Hz"],a:1},
-{t:"A律13折线编码+635→8位PCM？",o:["11100010","11100011","11000111","11100110"],a:1},
-{t:"卡森公式Df=75kHz,fm=15kHz，BFM=？",o:["90kHz","150kHz","180kHz","360kHz"],a:2},
-{t:"RX(t)=16+1/(1+t2)，方差=？",o:["0","1","16","17"],a:1},
-{t:"n0/2=1e-10,B=10kHz，输出噪声功率？",o:["1e-6W","2e-6W","1e-10W","2e-10W"],a:1},
-{t:"信源熵p=1/2,1/4,1/8,1/16,1/16，H=？",o:["1.5","1.75","1.875","2"],a:2},
-{t:"DSB的G=？",o:["1","0.667","2","3"],a:2},
-{t:"2PSK倒pi原因是？",o:["频率偏移","载波反相","码间串扰","噪声太大"],a:1},
-{t:"AMI码4连0在HDB3替换为？",o:["保持0000","000V或B00V","1111","特殊码"],a:1}
+
+// ===== 内置题库 =====
+DATA['通信原理_大题']=[
+{t:"PCM时分复用：8路信号每路4kHz，8位编码，总码率？",o:["256kbit/s","512kbit/s","1024kbit/s","64kbit/s"],a:1},
+{t:"升余弦RB=2400,a=0.4，带宽？",o:["1200Hz","1680Hz","2400Hz","3360Hz"],a:1},
+{t:"A律13折线+635→PCM码？",o:["11100010","11100011","11000111","11100110"],a:1},
+{t:"卡森Df=75,fm=15，BFM？",o:["90kHz","150kHz","180kHz","360kHz"],a:2},
+{t:"RX(t)=16+1/(1+t²)，方差？",o:["0","1","16","17"],a:1},
+{t:"n0/2=1e-10,B=10k，输出噪声？",o:["1e-6W","2e-6W","1e-10W","2e-10W"],a:1},
+{t:"信源熵p=1/2,1/4,1/8,1/16,1/16？",o:["1.5","1.75","1.875","2"],a:2},
+{t:"DSB制度增益G？",o:["1","0.667","2","3"],a:2},
+{t:"2PSK倒pi原因？",o:["频率偏移","载波反相","码间串扰","噪声大"],a:1},
+{t:"4连0在HDB3替换为？",o:["0000","000V/B00V","1111","特殊码"],a:1}
 ];
-DATA['通信原理_习题.txt']=[
-{t:"汉明码dmin=3可检纠？",o:["检2纠1","检1纠1","检3纠2","检2纠2"],a:0},
+DATA['通信原理_习题']=[
+{t:"汉明码dmin=3,可检纠？",o:["检2纠1","检1纠1","检3纠2","检2纠2"],a:0},
 {t:"采样定理fs≥？",o:["fH","2fH","3fH","4fH"],a:1},
 {t:"PCM基群速率？",o:["64k","1.544M","2.048M","8.448M"],a:2},
-{t:"哪种无相位模糊？",o:["2PSK","2DPSK","QPSK","8PSK"],a:1},
-{t:"香农公式B增大C趋近？",o:["无限大","1.44S/n0","线性","先增后减"],a:1}
+{t:"哪个无相位模糊？",o:["2PSK","2DPSK","QPSK","8PSK"],a:1},
+{t:"B→∞时C趋近？",o:["无限大","1.44S/n0","线性","先增后减"],a:1}
 ];
 
-function init(){
+// ===== 初始化 =====
+function renderList(){
 var list=document.getElementById('fileList');list.innerHTML='';
-for(var n in DATA){
-var wrap=document.createElement('span');wrap.style.cssText='display:inline-flex;align-items:center;gap:2px;margin:0';
+var names=Object.keys(DATA);
+if(names.length==0){list.innerHTML='<div class=\"empty\">暂无题库，请导入 .txt 文件</div>';document.getElementById('btnStart').disabled=true;return;}
+for(var i=0;i<names.length;i++){
+var n=names[i];
 var b=document.createElement('button');b.className='file-btn';
-b.textContent=n+' ('+DATA[n].length+'题)';
-(function(name){b.onclick=function(){selectFile(name);};})(n);
-var del=document.createElement('button');del.textContent='x';del.style.cssText='width:20px;height:20px;border-radius:50%;border:none;background:#aaa;color:#fff;font-size:11px;cursor:pointer;line-height:20px;padding:0;vertical-align:middle';
-(function(name){del.onclick=function(e){e.stopPropagation();delete DATA[name];wrap.remove();if(curFile===name){document.getElementById('btnStart').disabled=true;};};})(n);
-wrap.appendChild(b);wrap.appendChild(del);list.appendChild(wrap);
+b.innerHTML=n+' ('+DATA[n].length+'题) <span class=\"del-btn\" data-name=\"'+n+'\">&times;</span>';
+b.onclick=function(e){if(e.target.tagName=='SPAN')return;selectFile(this);};
+list.appendChild(b);
 }
-// drag/drop
-var dz=document.getElementById('dropZone');
-dz.addEventListener('dragover',function(e){e.preventDefault();dz.style.borderColor='#4a90d9';dz.style.background='#f5f8ff';});
-dz.addEventListener('dragleave',function(e){e.preventDefault();dz.style.borderColor='#ccc';dz.style.background='';});
-dz.addEventListener('drop',function(e){e.preventDefault();dz.style.borderColor='#ccc';dz.style.background='';importFiles(e.dataTransfer.files);});
+// 绑定删除事件
+list.querySelectorAll('.del-btn').forEach(function(btn){
+btn.onclick=function(e){e.stopPropagation();var name=this.getAttribute('data-name');delete DATA[name];renderList();if(curFile===name){curFile='';document.getElementById('btnStart').disabled=true;}};
+});
+setTimeout(function(){
+var first=list.querySelector('.file-btn');if(first)first.click();
+},100);
 }
-function selectFile(name){curFile=name;qs=DATA[name];idx=0;ans={};
+
+function selectFile(btn){
 document.querySelectorAll('.file-btn').forEach(function(b){b.classList.remove('active');});
-event.target.classList.add('active');
+btn.classList.add('active');
+curFile=btn.textContent.replace(/\d+题.*/,'').trim();
+// Find exact key
+for(var n in DATA){if(btn.textContent.includes(n)){curFile=n;break;}}
+qs=DATA[curFile];idx=0;ans={};
 document.getElementById('btnStart').disabled=false;
-document.getElementById('btnStart').textContent='开始答题 ('+name+')';
+document.getElementById('btnStart').textContent='开始答题 ('+curFile+')';
 }
+
+// ===== 答题逻辑 =====
 function startQuiz(){document.getElementById('home').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');showQ();}
+
 function showQ(){
 if(!qs.length)return;var q=qs[idx];
-document.getElementById('progressText').textContent='第'+(idx+1)+'/'+qs.length+'题';
+document.getElementById('progressText').textContent='第'+(idx+1)+'/'+qs.length+'题  正确:'+Object.keys(ans).filter(function(k){return ans[k]===qs[k].a;}).length;
 document.getElementById('progressBar').style.width=((idx+1)/qs.length*100)+'%';
-document.getElementById('qText').textContent=q.t;
+document.getElementById('qText').textContent='('+(idx+1)+') '+q.t;
 var o=document.getElementById('options');o.innerHTML='';
 for(var i=0;i<q.o.length;i++){
 var d=document.createElement('div');d.className='opt';d.textContent=String.fromCharCode(65+i)+'. '+q.o[i];
-if(ans[idx]!==undefined){d.classList.add('disabled');
+if(ans[idx]!==undefined){
+d.classList.add('disabled');
 if(i===q.a)d.classList.add('correct');
 if(ans[idx]===i&&i!==q.a)d.classList.add('wrong');
 }else{(function(ii){d.onclick=function(){pick(ii);};})(i);}
@@ -125,46 +142,74 @@ o.appendChild(d);
 document.getElementById('btnPrev').disabled=(idx===0);
 var last=(idx===qs.length-1);
 document.getElementById('btnNext').classList.toggle('hidden',last);
-document.getElementById('btnFinish').classList.toggle('hidden',!last);
+document.getElementById('btnFinish').classList.toggle('hidden',!last||ans[idx]===undefined);
 document.getElementById('result').classList.add('hidden');
 }
+
 function pick(i){if(ans[idx]!==undefined)return;ans[idx]=i;showQ();
-setTimeout(function(){if(idx<qs.length-1){idx++;showQ();}},500);
-}
+setTimeout(function(){if(idx<qs.length-1){idx++;showQ();}},600);}
+
 function prevQ(){if(idx>0){idx--;showQ();}}
 function nextQ(){if(idx<qs.length-1){idx++;showQ();}}
+
 function showResult(){
 var c=0;for(var i=0;i<qs.length;i++){if(ans[i]===qs[i].a)c++;}
 var p=Math.round(c/qs.length*100);
 document.getElementById('options').innerHTML='';
 document.getElementById('result').classList.remove('hidden');
-document.getElementById('scoreDisplay').innerHTML='<big>'+(p>=60?'🎉':'💪')+'</big>答对<num>'+c+'</num>/'+qs.length+'题 正确率'+p+'%';
+document.getElementById('scoreDisplay').innerHTML='<big>'+(p>=60?'&#x1F389;':'&#x1F4AA;')+'</big>答对<num>'+c+'</num>/'+qs.length+'题  正确率'+p+'%';
 document.getElementById('btnFinish').classList.add('hidden');
 }
-function backHome(){document.getElementById('quiz').classList.add('hidden');document.getElementById('home').classList.remove('hidden');curFile='';document.getElementById('btnStart').disabled=true;}
+
+function backHome(){document.getElementById('quiz').classList.add('hidden');document.getElementById('home').classList.remove('hidden');document.getElementById('btnStart').disabled=true;renderList();}
+
+// ===== 导入题库 =====
 function importFiles(files){
 if(!files.length)return;
 for(var i=0;i<files.length;i++){(function(file){
 var r=new FileReader();
 r.onload=function(ev){
-var txt=ev.target.result;var lines=txt.split('\n');var qs2=[];
+var txt=ev.target.result;var lines=txt.split('\n');var qlist=[];var cur={t:'',o:[],a:-1};var hasQ=false;
 for(var j=0;j<lines.length;j++){
-var l=lines[j].trim();
-if(/^\d+[.、\s]/.test(l)){qs2.push({t:l.replace(/^\d+[.、\s]/,''),o:[],a:-1});}
-else if(/^[A-D][.、]/.test(l)&&qs2.length){qs2[qs2.length-1].o.push(l.replace(/^[A-D][.、]/,''));}
+var l=lines[j].trim();if(!l)continue;
+// 跳过作业头
+if(/^(作业|题量|作答时间|智能分析)/.test(l))continue;
+// 识别题目数字开头
+var m=l.match(/^(\d+)[.、\s]+(.+)/);
+if(m){
+if(cur.t&&cur.o.length){qlist.push(cur);hasQ=true;}
+cur={t:m[2].trim(),o:[],a:-1};
+continue;
 }
-if(qs2.length){
-DATA[file.name]=qs2;var list=document.getElementById('fileList');
-var wrap=document.createElement('div');wrap.style.cssText='display:inline-flex;align-items:center;gap:2px';
-var b=document.createElement('button');b.className='file-btn';
-b.textContent=file.name+' ('+qs2.length+'题)';
-(function(n){b.onclick=function(){selectFile(n);};})(file.name);
-var del=document.createElement('button');del.textContent='x';del.style.cssText='width:20px;height:20px;border-radius:50%;border:none;background:#e74c3c;color:#fff;font-size:11px;cursor:pointer;line-height:20px;padding:0';
-(function(n){del.onclick=function(e){e.stopPropagation();delete DATA[n];wrap.remove();alert('已移除: '+n);};})(file.name);
-wrap.appendChild(b);wrap.appendChild(del);list.appendChild(wrap);
+// 识别选项 A.B.C.D.
+var om=l.match(/^([A-Da-d])[.、\s]+(.+)/);
+if(om&&cur.t){cur.o.push(om[2].trim());continue;}
+// 识别答案行
+var am=l.match(/^(?:我的答案|正确答案|正确)[：:]\s*(.*)/);
+if(am&&cur.t){
+var val=am[1].trim();
+if(/^[A-Da-d]/.test(val)){cur.a=val.toUpperCase().charCodeAt(0)-65;}
+else if(/^\d+$/.test(val)){cur.a=parseInt(val)-1;}
+}
+}
+if(cur.t&&cur.o.length){qlist.push(cur);hasQ=true;}
+if(hasQ){
+var name=file.name.replace('.txt','');DATA[name]=qlist;renderList();
+// 自动选中新导入的
+var btns=document.querySelectorAll('.file-btn');
+for(var k=0;k<btns.length;k++){if(btns[k].textContent.includes(name)){btns[k].click();break;}}
 }
 };r.readAsText(file);
 })(files[i]);}
 }
-init();
+
+// ===== 拖拽支持 =====
+(function(){
+var dz=document.getElementById('dropZone');
+dz.addEventListener('dragover',function(e){e.preventDefault();dz.style.borderColor='#4a90d9';dz.style.background='#f5f8ff';});
+dz.addEventListener('dragleave',function(e){e.preventDefault();dz.style.borderColor='#ccc';dz.style.background='';});
+dz.addEventListener('drop',function(e){e.preventDefault();dz.style.borderColor='#ccc';dz.style.background='';importFiles(e.dataTransfer.files);});
+})();
+
+renderList();
 </script></body></html>
