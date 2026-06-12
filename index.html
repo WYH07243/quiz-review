@@ -716,13 +716,7 @@ async function aiEvaluate(num){
   var q=allQuestions.find(function(x){return x.number===num;});if(!q)return;
   var btn=document.getElementById('aiBtn_'+num);if(!btn)return;
   btn.disabled=true;btn.innerHTML='<span class="ai-loading"></span> scoring...';
-  var prompt='你是一名通信原理考试阅卷老师。请判断学生的答案是否等价于正确答案（考虑计算题可能有多种写法）。
-
-题目：'+q.title+'
-正确答案：'+q.correct+'
-学生答案：'+(userAnswers[num]||'')+'
-
-请用中文回答：是否正确？如果不完全正确，给出扣分点和修改建议。';
+  var prompt='你是一名通信原理考试阅卷老师。请判断学生的答案是否等价于正确答案（考虑计算题可能有多种写法）。\n\n题目：'+q.title+'\n正确答案：'+q.correct+'\n学生答案：'+(userAnswers[num]||'')+'\n\n请用中文回答：是否正确？如果不完全正确，给出扣分点和修改建议。';
   try{
     var r=await callAI(prompt);
     var el=document.getElementById('aiResult_'+num);
@@ -738,12 +732,7 @@ async function aiExplain(num){
   var q=allQuestions.find(function(x){return x.number===num;});if(!q)return;
   var btn=document.getElementById('aiExplainBtn_'+num);if(!btn)return;
   btn.disabled=true;btn.innerHTML='<span class="ai-loading"></span> generating...';
-  var prompt='你是一名通信原理老师。请详细讲解这道题的解题思路和步骤。
-
-题目：'+q.title+'
-答案：'+q.correct+'
-
-要求：用中文回答，简洁明了，分步骤讲解。';
+  var prompt='你是一名通信原理老师。请详细讲解这道题的解题思路和步骤。\n\n题目：'+q.title+'\n答案：'+q.correct+'\n\n要求：用中文回答，简洁明了，分步骤讲解。';
   try{
     var r=await callAI(prompt);
     var el=document.getElementById('aiResult_'+num);
