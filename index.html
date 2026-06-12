@@ -108,7 +108,7 @@ body{font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",sans-serif;bac
 .btn-group button:active{transform:scale(.97)}
 .btn-group .btn-retry{background:#27ae60;color:#fff}
 .btn-group .btn-home{background:#888;color:#fff}
-.swipe-hint{text-align:center;color:#bbb;font-size:11px;padding:8px;display:flex;align-items:center;justify-content:center;gap:8px;margin:4px 0 12px 0}
+.swipe-hint{text-align:center;color:#bbb;font-size:11px;padding:8px;display:flex;align-items:center;justify-content:center;gap:8px;margin:4px 0 12px 0}.modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:999}.modal.hidden{display:none}.modal-content{background:#fff;border-radius:16px;padding:24px;margin:16px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.15)}.ai-btn{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;cursor:pointer;margin-top:8px;transition:.15s;display:inline-flex;align-items:center;gap:4px}.ai-btn:hover{opacity:.9}.ai-btn:disabled{opacity:.5;cursor:wait}.ai-result{background:#f8f3ff;border-radius:8px;padding:10px 14px;margin-top:8px;font-size:12px;line-height:1.7;color:#444;border-left:3px solid #667eea;white-space:pre-wrap}.ai-loading{display:inline-block;width:14px;height:14px;border:2px solid #ddd;border-top-color:#667eea;border-radius:50%;animation:spin .6s linear infinite;margin-right:6px;vertical-align:middle}@keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:600px){
   .topbar{padding:12px 14px}.topbar h1{font-size:15px}
   .import-zone{padding:32px 14px;margin:12px 0}.import-zone .icon{font-size:44px}.import-zone h2{font-size:16px}.import-zone p{font-size:13px}
@@ -133,7 +133,21 @@ body{font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",sans-serif;bac
 
 <div class="topbar">
   <h1>复习题</h1>
-  <div class="score">进度 <b id="progress">0/0</b></div>
+  <div class="score">
+    <span style="font-size:11px;margin-right:8px;cursor:pointer;opacity:.6" onclick="toggleSettings()">⚙️</span>
+    进度 <b id="progress">0/0</b>
+  </div>
+</div>
+
+<div id="settingsModal" class="modal hidden" onclick="if(event.target===this) toggleSettings()">
+  <div class="modal-content" style="max-width:420px">
+    <h3 style="margin-bottom:12px">⚙️ AI 设置</h3>
+    <label style="display:block;font-size:13px;color:#666;margin-bottom:4px">DeepSeek API Key</label>
+    <input id="apiKeyInput" type="password" style="width:100%;padding:10px 14px;border:2px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px" placeholder="sk-..." value="">
+    <div style="font-size:12px;color:#999;margin-bottom:12px">用你的 DeepSeek API Key</div>
+    <button onclick="saveApiKey()" style="padding:10px 24px;background:#4a90d9;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px">保存</button>
+    <span id="apiKeyMsg" style="margin-left:12px;font-size:13px;color:#27ae60"></span>
+  </div>
 </div>
 
 <!-- ── 首页：导入文件 ── -->
@@ -605,6 +619,7 @@ function submitAll(){
   }
 
   var wlNums = wl.map(function(q){ return q.number; });
+  h += '<div id="aiSummaryArea" style="margin-top:16px"></div>';
   h += '<div class="btn-group">';
   h += '<button class="btn-retry" onclick="retryWrong('+JSON.stringify(wlNums)+')">🔁 重做错题 ('+wl.length+'题)</button>';
   h += '<button class="btn-home" onclick="goHome()">🏠 返回首页</button>';
@@ -664,6 +679,84 @@ function fillOk(u,c){
 
 function label(t){ return t==='single'?'单选题':t==='blank'?'填空题':'简答题'; }
 function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-</script>
+
+
+// AI Functions
+function toggleSettings(){
+  document.getElementById('settingsModal').classList.toggle('hidden');
+  document.getElementById('apiKeyInput').value = localStorage.getItem('deepseek_key')||'';
+}
+function saveApiKey(){
+  var key = document.getElementById('apiKeyInput').value.trim();
+  if(key){localStorage.setItem('deepseek_key',key);document.getElementById('apiKeyMsg').textContent='\u2705 ok';}
+  else{localStorage.removeItem('deepseek_key');document.getElementById('apiKeyMsg').textContent='cleared';}
+  setTimeout(function(){document.getElementById('apiKeyMsg').textContent='';},2000);
+}
+function getApiKey(){return localStorage.getItem('deepseek_key')||'';}
+
+async function callAI(prompt){
+  var key=getApiKey();
+  if(!key){toggleSettings();throw new Error('set API key first');}
+  var resp=await fetch('https://api.deepseek.com/v1/chat/completions',{
+    method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+    body:JSON.stringify({model:'deepseek-chat',messages:[{role:'user',content:prompt}],max_tokens:1024,temperature:0.3})
+  });
+  var data=await resp.json();
+  if(data.error) throw new Error(data.error.message);
+  return data.choices[0].message.content;
+}
+
+async function aiEvaluate(num){
+  var q=allQuestions.find(function(x){return x.number===num;});if(!q)return;
+  var btn=document.getElementById('aiBtn_'+num);if(!btn)return;
+  btn.disabled=true;btn.innerHTML='<span class="ai-loading"></span> scoring...';
+  var prompt='You are a communication theory exam grader. Judge if the student answer is equivalent to the correct answer (considering calculation variations).\n\nQuestion: '+q.title+'\nCorrect: '+q.correct+'\nStudent: '+(userAnswers[num]||'')+'\n\nReply in Chinese: Is it correct? Give suggestions if partially correct.';
+  try{
+    var r=await callAI(prompt);
+    var el=document.getElementById('aiResult_'+num);
+    if(el){el.innerHTML='\U0001f916 '+r;el.classList.remove('hidden');}
+    btn.innerHTML='\U0001f916 AI done';
+  }catch(e){
+    btn.innerHTML='\U0001f916 failed';alert(e.message);
+  }
+  btn.disabled=false;
+}
+
+async function aiExplain(num){
+  var q=allQuestions.find(function(x){return x.number===num;});if(!q)return;
+  var btn=document.getElementById('aiExplainBtn_'+num);if(!btn)return;
+  btn.disabled=true;btn.innerHTML='<span class="ai-loading"></span> generating...';
+  var prompt='You are a communication theory teacher. Give a detailed explanation of this question.\n\nQuestion: '+q.title+'\nAnswer: '+q.correct+'\n\nReply in Chinese, simple and structured.';
+  try{
+    var r=await callAI(prompt);
+    var el=document.getElementById('aiResult_'+num);
+    if(el){el.innerHTML='\U0001f4d6 '+r;el.classList.remove('hidden');}
+    btn.innerHTML='\U0001f916 explained';
+  }catch(e){
+    btn.innerHTML='\U0001f916 failed';alert(e.message);
+  }
+  btn.disabled=false;
+}
+
+async function aiSummary(){
+  var wl=allQuestions.filter(function(q){return userAnswers[q.number]&&!checkQ(q.number,q);});
+  if(!wl.length){alert('no wrong questions');return;}
+  var btn=document.getElementById('aiSummaryBtn');if(!btn)return;
+  btn.disabled=true;btn.innerHTML='<span class="ai-loading"></span> analyzing...';
+  var prompt='You are a learning analysis assistant. Analyze the students wrong answers and suggest weak points and review focus.\n\n';
+  wl.slice(0,10).forEach(function(q,i){
+    prompt+=(i+1)+'. '+q.title+'\nStudent: '+(userAnswers[q.number]||'')+'\nCorrect: '+q.correct+'\n\n';
+  });
+  prompt+='Reply in Chinese: main weak points? which topics to review?';
+  try{
+    var r=await callAI(prompt);
+    var area=document.getElementById('aiSummaryArea');
+    if(area) area.innerHTML='<div class="ai-result" style="margin-top:0">\U0001f916 '+r+'</div>';
+    btn.innerHTML='\U0001f916 done';
+  }catch(e){
+    btn.innerHTML='\U0001f916 failed';alert(e.message);
+  }
+  btn.disabled=false;
+}</script>
 </body>
 </html>
