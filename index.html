@@ -289,7 +289,7 @@ async function docText(file){
     }
   }
   if (seg.length > 10) out.push(seg);
-  if (out.length === 0) throw new Error('无法解析 .doc 文件，建议用 Word 另存为 .docx 格式后再导入');
+  if (out.length === 0) throw new Error('无法解析 .doc 文件💡请用Word打开后「另存为.docx格式」再拖入');
   return out.join('\n');
 }
 
