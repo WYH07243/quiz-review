@@ -627,7 +627,8 @@ function submitAll(){
   h += '<div id="aiSummaryArea" style="margin-top:16px"></div>';
   h += '<div class="btn-group">';
   h += '<button class="btn-retry" onclick="retryWrong('+JSON.stringify(wlNums)+')">🔁 重做错题 ('+wl.length+'题)</button>';
-  h += '<button class="btn-home" onclick="goHome()">🏠 返回首页</button>';
+  h += '<button class="ai-btn" onclick="aiSummary()" id="aiSummaryBtn">🤖 AI 学习分析</button>';
+    h += '<button class="btn-home" onclick="goHome()">🏠 返回首页</button>';
   h += '</div>';
   document.getElementById('resultContent').innerHTML = h;
   window.scrollTo(0,0);
