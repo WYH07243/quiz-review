@@ -389,9 +389,10 @@ function parseQuiz(text, filename){
       continue;
     }
     // 无题型标记的行：直接当作题目（如 "1. PCM时分复用系统：..."）
-    if (!qm){
+    if (/^\d+\.?\d*分$/.test(line)) continue;
+        if (!qm){
       var qm2 = line.match(/^(\d+)\.\s*(.+)/);
-      if (qm2 && !/^(我的答案|正确答案|A\.|B\.|C\.|D\.|E\.|[一二三四五六七八九十]|\d+\.?\d*分$).test(line)){
+      if (qm2 && !/^(我的答案|正确答案|A\.|B\.|C\.|D\.|E\.|[一二三四五六七八九十])).test(line)){
         saveQ();
         cur = { type:curType, number:parseInt(qm2[1]), title:qm2[2].trim(), options:[], my_answer:'', correct:'', explanation:'', score:'' };
         state = cur.title ? 'options' : 'title';
