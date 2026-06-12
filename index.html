@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#1a1a2e">
 <meta name="format-detection" content="telephone=no">
-<title>📝 通信原理复习题</title>
+<title>复习题</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{font-size:16px}
@@ -140,7 +140,7 @@ body{font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",sans-serif;bac
 <section id="homePage" class="main">
   <div class="import-zone" id="dropZone">
     <span class="icon">📂</span>
-    <h2>导入复习题，开始复习题</h2>
+    <h2>复习题</h2>
     <p>支持 .txt .docx .doc 格式<br>点击选择文件，或直接拖拽到此处</p>
   </div>
   <input type="file" id="fileInput" multiple accept=".txt,.docx,.doc" style="display:none">
@@ -329,7 +329,7 @@ function removeFile(i){
     document.getElementById('fileList').classList.remove('show');
     document.getElementById('btnStart').disabled = true;
     clearStatus();
-    document.querySelector('#homePage h2').textContent = '导入复习题，开始复习题';
+    document.querySelector('#homePage h2').textContent = '复习题';
     document.title = '复习题';
     document.querySelector('.topbar h1').textContent = '复习题';
   } else {
