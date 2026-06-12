@@ -356,13 +356,13 @@ function removeFile(i){
 function parseQuiz(text, filename){
   var lines = text.split(/\r?\n/);
   var questions = [];
-  var curType = 'single';
+  var curType = 'short';
   var cur = null;
   var state = 'options';
   var lastOpt = '';
   var inMy = false, inCorr = false;
 
-  function saveQ(){ if (cur){ cur._file = filename; questions.push(cur); } cur = null; }
+  function saveQ(){ if (cur){ if (cur.options.length>0 && cur.type!='single') cur.type='single'; cur._file = filename; questions.push(cur); } cur = null; }
 
   for (var i = 0; i < lines.length; i++){
     var line = lines[i].trim();
