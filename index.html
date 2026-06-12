@@ -270,27 +270,41 @@ async function docxText(file){
 }
 
 async function docText(file){
-  // .doc 旧格式解析（Word二进制格式，纯前端提取有限）
+  // 改进版 .doc 解析
   var buf = await file.arrayBuffer();
   var b = new Uint8Array(buf);
-  var out = [], seg = '';
-  for (var i = 0; i < b.length - 1; i += 2){
-    var ch = b[i] | (b[i+1] << 8);
-    if ((ch >= 0x4E00 && ch <= 0x9FFF) || (ch >= 0x30 && ch <= 0x39) ||
-        (ch >= 0x41 && ch <= 0x5A) || (ch >= 0x61 && ch <= 0x7A) ||
-        ch === 0x20 || ch === 0x0D || ch === 0x0A ||
-        ch === 0x28||ch===0x29||ch===0x2E||ch===0x2C||ch===0x3B||
-        ch===0x3001||ch===0x3002||ch===0xFF0C||ch===0xFF1B||ch===0xFF1A||
-        ch===0xFF08||ch===0xFF09){
-      seg += String.fromCharCode(ch);
-    } else {
-      if (seg.length > 10){ out.push(seg); }
-      seg = '';
+  var result = '';
+  var bestText = '';
+  var bestLen = 0;
+  
+  // 尝试两种字节偏移扫描所有可读文本
+  for (var offset = 0; offset < 2; offset++){
+    var seg = '';
+    var parts = [];
+    for (var i = offset; i < b.length - 1; i += 2){
+      var ch = b[i] | (b[i+1] << 8);
+      var ok = (ch >= 0x4E00 && ch <= 0x9FFF) ||  
+               (ch >= 0x30 && ch <= 0x39) ||        
+               (ch >= 0x41 && ch <= 0x5A) ||        
+               (ch >= 0x61 && ch <= 0x7A) ||        
+               ch === 0x20 || ch === 0x0D || ch === 0x0A ||
+               ch === 0x28||ch===0x29||ch===0x2E||ch===0x2C||ch===0x3B||
+               ch===0x3A||ch===0x3D||ch===0x2F||ch===0x2B||ch===0x2D||
+               ch===0x3001||ch===0x3002||ch===0xFF0C||ch===0xFF1B||
+               ch===0xFF08||ch===0xFF09||ch===0x300A||ch===0x300B||
+               ch===0x201C||ch===0x201D||ch===0x2014||ch===0x2026||
+               ch===0xFF01||ch===0xFF1F||ch===0x00B0||ch===0x2103;
+      if (ok) { seg += String.fromCharCode(ch); }
+      else { if (seg.length > 20){ parts.push(seg); } seg = ''; }
     }
+    if (seg.length > 20) parts.push(seg);
+    var txt = parts.join('
+');
+    if (txt.length > bestLen){ bestLen = txt.length; bestText = txt; }
   }
-  if (seg.length > 10) out.push(seg);
-  if (out.length === 0) throw new Error('无法解析 .doc 文件💡请用Word打开后「另存为.docx格式」再拖入');
-  return out.join('\n');
+  
+  if (bestLen < 100) throw new Error('.doc 解析不完全，建议用Word打开后另存为.docx格式');
+  return bestText;
 }
 
 function renderFileList(){
