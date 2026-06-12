@@ -136,7 +136,11 @@ body{font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",sans-serif;bac
   </div>
   <input type="file" id="fileInput" multiple accept=".txt,.docx,.doc" style="display:none">
 
-  <div class="file-list" id="fileList">
+  
+  <div class="sample-files" id="sampleFiles">
+    <h3 style="font-size:13px;color:#888;margin:12px 0 8px">📂 预设复习题（点击加载）</h3>
+  </div>
+<div class="file-list" id="fileList">
     <h3>已加载文件：</h3>
     <div id="fileItems"></div>
   </div>
@@ -187,7 +191,7 @@ var filesByCount = {};
   dz.addEventListener('dragleave', function(e){ e.preventDefault(); dz.classList.remove('dragover'); });
   dz.addEventListener('drop', function(e){ e.preventDefault(); dz.classList.remove('dragover'); loadFiles(e.dataTransfer.files); });
   fi.addEventListener('change', function(){ loadFiles(fi.files); fi.value = ''; });
-})();
+})(); });
 
 function setStatus(msg, isErr){
   var s = document.getElementById('status');
@@ -307,6 +311,32 @@ async function docText(file){
   return bestText;
 }
 
+
+// 加载预设复习题
+async function loadSampleFiles(){
+  var files = ['通信原理_大题.txt', '通信原理_习题.txt'];
+  for (var name of files){
+    var url = location.origin + location.pathname + name;
+    try {
+      var resp = await fetch(url);
+      if (!resp.ok) continue;
+      var text = await resp.text();
+      var quiz = parseQuiz(text, name);
+      if (quiz.length > 0){
+        for (var q of quiz){ q._file = name; }
+        allQuestions = allQuestions.concat(quiz);
+        if (fileNames.indexOf(name) < 0) fileNames.push(name);
+        filesByCount[name] = quiz.length;
+      }
+    } catch(e){}
+  }
+  if (fileNames.length > 0){
+    renderFileList();
+    document.getElementById('btnStart').disabled = false;
+    setStatus('已加载 ' + allQuestions.length + ' 题 (' + fileNames.join(', ') + ')');
+  }
+}
+loadSampleFiles();
 function renderFileList(){
   var list = document.getElementById('fileList');
   var items = document.getElementById('fileItems');
