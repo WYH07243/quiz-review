@@ -896,7 +896,7 @@ async function aiEvaluate(num){
   var q=allQuestions.find(function(x){return x.number===num;});if(!q)return;
   var btn=document.getElementById('aiBtn_'+num);if(!btn)return;
   btn.disabled=true;btn.innerHTML='<span class="ai-loading"></span> scoring...';
-  var prompt='题目：'+q.title+'\n正确答案：'+q.correct+'\n学生答案：'+(userAnswers[num]||'')+'\n\n直接回答：是否正确？扣几分？为什么？只输出分析，不要多余开场白。';
+  var prompt='题目：'+q.title+'\n正确答案：'+q.correct+'\n学生答案：'+(userAnswers[num]||'')+'\n\n请按以下格式输出：\n【判断】正确/错误\n【解析】分步写出推理过程，公式和计算步骤请用清晰的数学格式\n【得分】X分/X分\n不要多余开场白和总结。';
   try{
     var r=await callAI(prompt);
     var el=document.getElementById('aiResult_'+num);
@@ -912,7 +912,7 @@ async function aiExplain(num){
   var q=allQuestions.find(function(x){return x.number===num;});if(!q)return;
   var btn=document.getElementById('aiExplainBtn_'+num);if(!btn)return;
   btn.disabled=true;btn.innerHTML='<span class="ai-loading"></span> generating...';
-  var prompt='解题：'+q.title+'\n答案：'+q.correct+'\n\n直接输出解题步骤，不要开场白和总结。';
+  var prompt='题目：'+q.title+'\n答案：'+q.correct+'\n\n请按以下格式输出：\n【解析】\n① 第一步...\n② 第二步...\n③ 第三步...\n公式和计算请用清晰的数学格式展示。\n不要多余开场白和总结。';
   try{
     var r=await callAI(prompt);
     var el=document.getElementById('aiResult_'+num);
