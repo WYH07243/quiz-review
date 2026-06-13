@@ -743,8 +743,9 @@ function submitAll(){
   h += '<div id="aiSummaryArea" style="margin-top:16px"></div>';
   h += '<div class="btn-group">';
   h += '<button class="btn-retry" onclick="retryWrong('+JSON.stringify(wlNums)+')">🔁 重做错题 ('+wl.length+'题)</button>';
+  h += '<button class="ai-btn" onclick="exportWrong()">📤 导出错题</button>';
   h += '<button class="ai-btn" onclick="aiSummary()" id="aiSummaryBtn">🤖 AI 学习分析</button>';
-    h += '<button class="btn-home" onclick="goHome()">🏠 返回首页</button>';
+  h += '<button class="btn-home" onclick="goHome()">🏠 返回首页</button>';
   h += '</div>';
   document.getElementById('resultContent').innerHTML = h;
   window.scrollTo(0,0);
@@ -752,6 +753,19 @@ function submitAll(){
 }
 
 function retryWrong(nums){ allQuestions = allQuestions.filter(function(q){ return nums.indexOf(q.number)>=0; }); startQuiz(); }
+function exportWrong(){
+  var wl = allQuestions.filter(function(q){ return userAnswers[q.number] && !checkQ(q.number,q); });
+  if (!wl.length) return alert('没有错题可导出');
+  var text = wl.map(function(q){
+    return '#'+q.number+' '+q.title+'\n你的答案: '+(userAnswers[q.number]||'')+'\n正确答案: '+q.correct+(q.explanation?'\n解析: '+q.explanation:'');
+  }).join('\n\n---\n\n');
+  var blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '错题_'+new Date().toISOString().slice(0,10)+'.txt';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
 function goHome(){ switchPage('home'); loadHistory(); }
 
 // ═══════ 历史记录 + 统计 ═══════
