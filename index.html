@@ -170,18 +170,61 @@ body{font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",sans-serif;bac
   .qcard-actions button{font-size:13px;padding:10px 16px;min-height:42px}
 }
 </style>
+<style>
+/* ===== 复习文件.html 风格 ===== */
+body{background:#f0f2f5!important}
+.main{max-width:700px!important}
+.topbar{text-align:center!important;border-radius:0 0 12px 12px!important;padding:16px 20px!important}
+.topbar h1{font-size:18px!important;display:inline!important}
+.topbar .score{display:inline!important;margin-left:8px!important;font-size:12px!important}
+.qcard{background:#fff!important;border-radius:12px!important;padding:20px!important;box-shadow:0 1px 4px rgba(0,0,0,.06)!important}
+.qcard .qtitle{font-size:16px!important;color:#333!important;line-height:1.7!important}
+.qcard .option{padding:12px 16px!important;border-radius:8px!important;border:1.5px solid #e0e0e0!important;font-size:14px!important;margin-bottom:8px!important;background:#fff!important}
+.qcard .option:hover{border-color:#4a90d9!important;background:#f5f8ff!important}
+.qcard .option.correct{border-color:#27ae60!important;background:#eafff0!important;color:#27ae60!important;font-weight:600!important}
+.qcard .option.wrong{border-color:#e74c3c!important;background:#fff0f0!important;color:#e74c3c!important}
+.qcard .option.selected{border-color:#4a90d9!important;background:#e8f0fe!important}
+.qcard .feedback.right{color:#1a7a3a!important}
+.qcard .feedback.wrong{color:#c0392b!important}
+.import-zone{border:2px dashed #ccc!important;border-radius:10px!important;padding:16px!important;color:#888!important;font-size:13px!important;margin-top:12px!important;border-top:1px solid #eee!important}
+.import-zone:hover{border-color:#4a90d9!important;background:#f5f8ff!important}
+.import-zone .icon{font-size:48px!important}
+.import-zone h2{font-size:16px!important;color:#333!important}
+.btn-start{background:#4a90d9!important;border-radius:10px!important;padding:12px 28px!important;font-size:14px!important;font-weight:600!important}
+.btn-start:disabled{background:#ccc!important}
+.btn-check{background:#27ae60!important;color:#fff!important;border:none!important;padding:12px 28px!important;border-radius:10px!important;font-size:14px!important;font-weight:600!important}
+.btn-prev,.btn-next{font-size:14px!important;font-weight:600!important;padding:12px 28px!important;border-radius:10px!important;border:none!important;cursor:pointer!important}
+.btn-prev{background:#e8ecf0!important;color:#555!important}
+.btn-next{background:#4a90d9!important;color:#fff!important}
+.qnav .dot{border-radius:50%!important;border:1px solid #ddd!important;font-size:11px!important;min-width:28px!important;height:28px!important}
+.qnav .dot.active{border-color:#4a90d9!important;background:#4a90d9!important}
+.qnav .dot.done{border-color:#27ae60!important;background:#27ae60!important}
+.qnav .dot.wrong-dot{border-color:#e74c3c!important;background:#e74c3c!important}
+.file-list .item{padding:10px 12px!important;border-radius:8px!important}
+
+[data-theme="dark"] body{background:#1a1a2e!important}
+[data-theme="dark"] .qcard{background:#1e1e3a!important}
+[data-theme="dark"] .qcard .qtitle{color:#e0e0e0!important}
+[data-theme="dark"] .qcard .option{background:#252545!important;border-color:#3a3a5a!important;color:#ddd!important}
+[data-theme="dark"] .qcard .option:hover{border-color:#4a90d9!important;background:#2a2a4a!important}
+[data-theme="dark"] .import-zone{border-color:#3a3a5a!important;color:#aaa!important}
+[data-theme="dark"] .import-zone:hover{border-color:#4a90d9!important;background:#252545!important}
+[data-theme="dark"] .btn-prev{background:#2a2a4a!important;color:#ddd!important}
+[data-theme="dark"] .file-list .item:hover{background:#252545!important}
+/* 需要移除的元素 */
+.toolbar{display:none!important}
+.btn-star{margin:0 4px!important;font-size:20px!important}
+#darkBtn{font-size:18px!important}
+</style>
 </head>
 <body>
 
 <div class="topbar">
   <h1>复习题</h1>
-  <div id="progressBarWrap" style="display:none;flex:1;margin:0 12px;height:6px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden">
-    <div id="progressFill" style="height:100%;width:0%;background:#4a90d9;border-radius:3px;transition:width .3s"></div>
-  </div>
-  <div class="score">
-    <span style="font-size:11px;margin-right:6px;cursor:pointer;opacity:.6" onclick="toggleSettings()">⚙️</span>
-    进度 <b id="progress">0/0</b>
-  </div>
+  <span style="font-size:11px;cursor:pointer;opacity:.6;margin:0 6px" onclick="toggleSettings()">⚙️</span>
+  <span id="starBtn" class="btn-star off" onclick="toggleStar()" style="cursor:pointer">☆</span>
+  <span id="darkBtn" onclick="toggleDark()" style="cursor:pointer;font-size:16px">🌙</span>
+  <span class="score">进度 <b id="progress">0/0</b></span>
 </div>
 
 <div id="settingsModal" class="modal hidden" onclick="if(event.target===this) toggleSettings()">
