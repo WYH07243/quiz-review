@@ -202,7 +202,7 @@ body{font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",sans-serif;bac
     <h2>复习题</h2>
     <p>支持 .txt .docx .doc 格式<br>点击选择文件，或直接拖拽到此处</p>
   </div>
-  <input type="file" id="fileInput" multiple accept=".txt,.docx,.doc" style="display:none">
+  <input type="file" id="fileInput" multiple accept=".txt,.docx,.doc" style="position:fixed;opacity:0;width:1px;height:1px;pointer-events:none;z-index:-1">
 
   <div class="file-list" id="fileList">
     <h3>📋 已加载文件</h3>
@@ -259,11 +259,11 @@ var filesByCount = {};
 (function(){
   var dz = document.getElementById('dropZone');
   var fi = document.getElementById('fileInput');
-  dz.addEventListener('click', function(){ fi.click(); });
+  dz.addEventListener('click', function(){ console.log('dropZone clicked'); fi.click(); });
   dz.addEventListener('dragover', function(e){ e.preventDefault(); dz.classList.add('dragover'); });
   dz.addEventListener('dragleave', function(e){ e.preventDefault(); dz.classList.remove('dragover'); });
   dz.addEventListener('drop', function(e){ e.preventDefault(); dz.classList.remove('dragover'); loadFiles(e.dataTransfer.files); });
-  fi.addEventListener('change', function(){ loadFiles(fi.files); fi.value = ''; });
+  fi.addEventListener('change', function(){ console.log('files selected:', fi.files.length); loadFiles(fi.files); fi.value = ''; });
   window.addEventListener('DOMContentLoaded', function(){ loadHistory(); });
   if (document.readyState !== 'loading') loadHistory();
 })();
